@@ -1,0 +1,5 @@
+{
+  "name": "smb-wordpress-ops",
+  "description": "SMB WordPress Ops: malware incident response, zero-downtime DNS migration, and client website handoff runbooks.",
+  "version": "0.1.0"
+}

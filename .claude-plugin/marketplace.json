@@ -1,0 +1,15 @@
+{
+  "name": "wizrdz-skills",
+  "owner": {
+    "name": "Thewizrdz.io",
+    "email": "eugeniosebastianperez@gmail.com"
+  },
+  "description": "SMB WordPress operations skills from real client engagements: malware incident response, zero-downtime DNS migration, and client website handoff.",
+  "plugins": [
+    {
+      "name": "smb-wordpress-ops",
+      "source": "./",
+      "description": "Three field-tested runbooks for freelancers and small agencies running WordPress sites: malware incident response, DNS migration without breaking email, and clean client handoffs."
+    }
+  ]
+}
