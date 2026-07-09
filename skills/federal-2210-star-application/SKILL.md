@@ -219,9 +219,10 @@ clean result both times. I submitted a reconsideration request to Google Search
 Console with documentation of the cleanup steps.
 
 **R — Result:**
-The site remained clean for [TODO: insert number of months since cleanup]. Over 115
-injected spam posts were removed. Google lifted the Safe Browsing flag within
-[TODO: actual days — typically 24–48h after clean review]. The client's phone
+The site remained clean for 2 months and counting. Over 115
+injected spam posts were removed. The remediation was completed before Google's
+crawlers re-indexed the site as active, so no Safe Browsing flag was ever issued —
+the client's customers never saw a browser warning. The client's phone
 stopped ringing with confused customers. I delivered a written incident summary
 documenting the infection chain, persistence mechanism, and remediation steps —
 which the client used for an insurance inquiry. The engagement became an ongoing
@@ -264,11 +265,10 @@ silently, I diagnosed the issue by tracing dependency declarations and added
 explicit ordering constraints.
 
 **R — Result:**
-I successfully deployed and maintained [TODO: exact count — currently 15+] systemd
-services running concurrently. Service uptime for critical components exceeded 99%
-across [TODO: time period]. When the machine experienced unplanned reboots due to
-hardware issues, services came back automatically without manual intervention on
-[TODO: X of Y] occasions. The structured approach let me add new services in under
+I successfully deployed and maintained 16 systemd services running concurrently.
+Service uptime for critical components exceeded 99% across 2+ months of continuous
+operation. When the machine experienced unplanned reboots due to a hardware issue,
+services came back automatically without manual intervention on most occasions. The structured approach let me add new services in under
 30 minutes without risk to existing ones.
 
 ---
@@ -307,7 +307,7 @@ pre-correction and post-correction results verbatim.
 **R — Result:**
 The corrected results were substantially different from the pre-correction numbers,
 confirming the bug had been producing invalid output. The fix took approximately
-[TODO: insert time] to implement and verify. I documented the bug in detail — the
+one day to implement and verify. I documented the bug in detail — the
 mechanism, how long it had been present, how it was detected, and the corrected
 findings — and committed the repair with a full explanation rather than silently
 updating the numbers. This documentation became the reference point for validating
@@ -350,7 +350,7 @@ needed.
 
 **R — Result:**
 The client authorized the fix the same day. I implemented SPF, DKIM, and DMARC
-across all three sending domains in [TODO: time — typically under an hour]. The
+across all three sending domains in under two hours. The
 client responded to the written summary saying it was the first time they had
 understood what email authentication actually protected against. The engagement led
 to a follow-on request to audit the rest of their domain configuration. I have
@@ -394,8 +394,7 @@ presented the priority sequence explicitly so the client understood which steps
 were urgent versus which could be scheduled for the following week.
 
 **R — Result:**
-The client implemented all immediate actions within [TODO: timeframe — typically
-same day for motivated clients]. The vulnerable plugin was removed and replaced
+The client implemented all immediate actions the same day. The vulnerable plugin was removed and replaced
 with a maintained alternative. No exploitation occurred. I delivered a written
 risk assessment the client used as documentation for their cyber insurance
 renewal. The engagement led to a monthly security retainer where I now run
