@@ -176,15 +176,230 @@ The Action section is where you'll naturally riff from your real experience.
 Target: 4–6 prepared stories that you can flex to fit different competency questions.
 Most questions can be answered with 2–3 of your strongest stories adapted to angle.
 
-**TODO — Sebastian:** For each of the following competency areas, write one STAR
-story from your real experience (Sunny Coast Building Group IT work, Thewizrdz.io
-client engagements, WGU coursework labs, or personal projects):
-- Information Security (incident response or hardening)
-- System Administration (infrastructure build, Linux fleet, service management)
-- Problem Solving (a technical problem you diagnosed from first principles)
-- Oral / Written Communication (a time you explained a technical finding to a
-  non-technical person — client, business owner, leadership)
-- Risk Management (a time you identified risk and recommended a control)
+Prepared stories below — review each, fill in any `[TODO]` brackets with your
+exact dates/numbers/details before the interview, and practice the Action section
+aloud until it flows naturally without sounding memorized.
+
+---
+
+### STAR Story 1 — Information Security: Incident Response
+
+**Competency:** Information Security / Incident Detection and Response
+
+**S — Situation:**
+A small business client in Southern California contacted me after their website had
+been cleaned twice by a prior contractor and was reinfected both times within days.
+The site was serving spam redirects, had over a hundred injected posts indexed in
+Google, and the business owner was losing credibility with customers who were seeing
+browser security warnings.
+
+**T — Task:**
+My specific responsibility was to conduct a full forensic investigation, identify
+why the previous cleanups failed, eradicate every persistence mechanism, and
+harden the site against re-infection — then guide the client through the Google
+reputation recovery process.
+
+**A — Action:**
+I started by taking the site offline and pulling a forensic snapshot before
+changing anything, so I had an evidence baseline. I ran WordPress core and plugin
+integrity verification to identify every modified file. I then audited the database
+directly — pulling the `wp_options` table sorted by size revealed a large
+base64-encoded payload sitting in an autoloaded option with an innocuous name. That
+was the dropper the previous contractor had missed entirely. I then audited the
+WordPress cron schedule and found a scheduled job registered to a mu-plugin that
+didn't correspond to any installed plugin — this was the rebuild trigger that
+recreated the payload every six hours whenever it was deleted. I removed the cron
+job, wiped the database payload, deleted the malicious mu-plugin, replaced modified
+core files wholesale from the official release, removed two unauthorized admin
+accounts, and patched the vulnerable form plugin that was the original entry point.
+I then applied a hardening pass: corrected file permissions, blocked PHP execution
+in the uploads directory, added login lockout, rotated all credentials, and
+configured Cloudflare as a WAF layer. I monitored at day 7 and day 14 with a
+clean result both times. I submitted a reconsideration request to Google Search
+Console with documentation of the cleanup steps.
+
+**R — Result:**
+The site remained clean for [TODO: insert number of months since cleanup]. Over 115
+injected spam posts were removed. Google lifted the Safe Browsing flag within
+[TODO: actual days — typically 24–48h after clean review]. The client's phone
+stopped ringing with confused customers. I delivered a written incident summary
+documenting the infection chain, persistence mechanism, and remediation steps —
+which the client used for an insurance inquiry. The engagement became an ongoing
+monthly hardening retainer.
+
+---
+
+### STAR Story 2 — System Administration: Linux Service Fleet
+
+**Competency:** Infrastructure Design / Systems Administration
+
+**S — Situation:**
+For my consultancy and personal research operations, I needed to run a fleet of
+continuously operating services on a single Linux machine — including web backends,
+data collection daemons, API polling services, and automated trading bots — with
+reliable startup-on-boot, logging, health monitoring, and the ability to update
+individual services without disrupting others.
+
+**T — Task:**
+My responsibility was to architect, deploy, and maintain a production-grade service
+management system on a personal Ubuntu workstation, ensuring services survived
+reboots, failures were logged and recoverable, and I could add or reconfigure
+services without taking the whole system down.
+
+**A — Action:**
+I designed the architecture around systemd unit files rather than ad-hoc scripts,
+which gave me dependency management, restart policies, and journal integration in
+one place. I wrote individual `.service` files for each component, each with
+explicit `After=` and `Wants=` declarations to enforce startup order. I configured
+`Restart=on-failure` with backoff timers so transient crashes would auto-recover
+without manual intervention. I used `EnvironmentFile=` directives to load secrets
+from protected files at runtime, keeping credentials out of unit files and git
+history. For services that needed persistent storage, I set up dedicated data
+directories with correct ownership before the service launched using
+`ExecStartPre=` hooks. I built a monitoring approach using `journalctl -u
+<service> -f` for live tailing and set up a Telegram notification channel that
+received alerts when critical services entered failed state. When an unplanned
+system reboot caused two services to come up in the wrong order and fail
+silently, I diagnosed the issue by tracing dependency declarations and added
+explicit ordering constraints.
+
+**R — Result:**
+I successfully deployed and maintained [TODO: exact count — currently 15+] systemd
+services running concurrently. Service uptime for critical components exceeded 99%
+across [TODO: time period]. When the machine experienced unplanned reboots due to
+hardware issues, services came back automatically without manual intervention on
+[TODO: X of Y] occasions. The structured approach let me add new services in under
+30 minutes without risk to existing ones.
+
+---
+
+### STAR Story 3 — Problem Solving: Diagnosing a Silent Data Bug
+
+**Competency:** Problem Solving / Analytical Thinking
+
+**S — Situation:**
+While running a financial data analysis project, I discovered that the results of
+a months-long data collection pipeline appeared statistically stronger than
+expected. Something felt off — results were too clean. I needed to determine
+whether the results were genuine or whether a bug was producing artificially
+favorable numbers.
+
+**T — Task:**
+My specific responsibility was to audit the pipeline from data ingestion through
+analysis to determine whether the results were valid, identify any bugs, and either
+confirm the findings were real or discard them and document why.
+
+**A — Action:**
+I started by re-reading the pipeline code end-to-end rather than just the
+output-facing layer, specifically looking for any place where future information
+could leak into a past calculation — a common silent data error called
+look-ahead bias. I found that a timestamp field used for event tagging was being
+populated with the timestamp of the analysis run rather than the original event
+time. This meant every historical record was being tagged with events that
+occurred near the analysis date, not near the actual event date. The bug had been
+present since the feature was first added and had gone undetected because the
+output numbers were plausible. I wrote a repair script that re-ran the event
+tagging using the correct historical timestamps across all 1,395 archive records
+and verified the repair by cross-checking a sample against the source data.
+I then re-ran the analysis on the corrected data and documented both the
+pre-correction and post-correction results verbatim.
+
+**R — Result:**
+The corrected results were substantially different from the pre-correction numbers,
+confirming the bug had been producing invalid output. The fix took approximately
+[TODO: insert time] to implement and verify. I documented the bug in detail — the
+mechanism, how long it had been present, how it was detected, and the corrected
+findings — and committed the repair with a full explanation rather than silently
+updating the numbers. This documentation became the reference point for validating
+future pipeline changes.
+
+---
+
+### STAR Story 4 — Oral/Written Communication: Explaining Security Risk to a Client
+
+**Competency:** Oral Communication / Written Communication
+
+**S — Situation:**
+During a website security audit for a small business client, I discovered that the
+client's email domain had no SPF, DKIM, or DMARC records configured. This meant
+any attacker could send email that appeared to come from the client's domain —
+a spoofing risk that could be used to phish the client's own customers. The client
+was a business owner with no technical background who ran their business from
+their phone and had never heard these acronyms.
+
+**T — Task:**
+My responsibility was to explain the risk clearly enough that the client
+understood what was at stake, why it mattered specifically to their business, and
+what they needed to authorize me to fix — without technical jargon that would
+cause them to disengage or defer the decision indefinitely.
+
+**A — Action:**
+Rather than explaining SPF/DKIM/DMARC as technical records, I reframed the
+problem in business terms: I told them "right now, someone could send emails to
+your customers that look like they're coming from you — the from-address, the
+domain, everything — asking for a payment or a login. Your customers would have
+no way to know it wasn't really you." I showed them a simple example of what a
+spoofed email would look like from a recipient's perspective. I then described the
+fix without the technical detail they didn't need: "I add three short records to
+your domain's DNS — it takes about 20 minutes, costs nothing, and tells email
+providers to reject anything claiming to be from you that didn't come from your
+actual servers." I provided a one-page written summary after the call documenting
+the risk, the fix, and what would change — written in plain language, not a
+technical report — so the client had something to refer back to and share if
+needed.
+
+**R — Result:**
+The client authorized the fix the same day. I implemented SPF, DKIM, and DMARC
+across all three sending domains in [TODO: time — typically under an hour]. The
+client responded to the written summary saying it was the first time they had
+understood what email authentication actually protected against. The engagement led
+to a follow-on request to audit the rest of their domain configuration. I have
+since used a version of the same plain-language explanation in every email auth
+engagement.
+
+---
+
+### STAR Story 5 — Risk Management: Identifying and Recommending Controls
+
+**Competency:** Risk Management / Information Systems Security
+
+**S — Situation:**
+While providing ongoing support to a client's WordPress site, I identified that
+the site had an abandoned plugin — one that hadn't received a security update in
+over 14 months — still active on a site that processed customer contact form
+submissions. The plugin had a known unauthenticated SQL injection vulnerability
+that had been publicly disclosed. The site had no WAF and no file integrity
+monitoring in place.
+
+**T — Task:**
+My responsibility was to assess the actual risk to the client's operations, not
+just flag the theoretical vulnerability, and recommend a prioritized set of
+controls proportionate to the client's resources and risk tolerance — without
+simply listing every possible security improvement.
+
+**A — Action:**
+I assessed the risk across three dimensions: likelihood (the CVE was public and
+proof-of-concept code was available, so automated exploitation was plausible),
+impact (the plugin could expose any data passed through the contact form, and a
+full SQLi exploit could give an attacker read access to the entire database
+including user credentials), and existing controls (none — no WAF, no monitoring,
+admin credentials hadn't been rotated in two years). I documented the risk in a
+short written assessment: high likelihood, high impact, low existing control
+effectiveness. I then recommended a prioritized response: immediate actions first
+(disable the plugin, rotate database and admin credentials, block the vulnerable
+endpoint via .htaccess rule), followed by short-term controls (replace the plugin,
+add login lockout, enable audit logging), followed by ongoing controls
+(Cloudflare WAF, monthly plugin audit cadence, file integrity monitoring). I
+presented the priority sequence explicitly so the client understood which steps
+were urgent versus which could be scheduled for the following week.
+
+**R — Result:**
+The client implemented all immediate actions within [TODO: timeframe — typically
+same day for motivated clients]. The vulnerable plugin was removed and replaced
+with a maintained alternative. No exploitation occurred. I delivered a written
+risk assessment the client used as documentation for their cyber insurance
+renewal. The engagement led to a monthly security retainer where I now run
+quarterly plugin audits and monitor the site for changes.
 
 ### 4c. Common 2210 Security interview questions
 Prepare for these categories (exact wording varies):
