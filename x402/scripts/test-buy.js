@@ -12,11 +12,14 @@
 
 import { wrapFetchWithPayment, createSigner } from 'x402-fetch';
 import { privateKeyToAccount } from 'viem/accounts';
-import { baseSepolia } from 'viem/chains';
+import { baseSepolia, base } from 'viem/chains';
 import { createWalletClient, http } from 'viem';
 
-const STAGING_URL = 'https://wizrdz-skills-gate-staging.thewizrdz.workers.dev';
-const SKILL = 'client-website-handoff';  // cheapest: $2 testnet USDC
+const ENV = process.env.ENV || 'staging';
+const BASE_URL = ENV === 'production'
+  ? 'https://wizrdz-skills-gate.thewizrdz.workers.dev'
+  : 'https://wizrdz-skills-gate-staging.thewizrdz.workers.dev';
+const SKILL = 'client-website-handoff';  // cheapest: $2 USDC
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 if (!PRIVATE_KEY) { console.error('Set PRIVATE_KEY env var'); process.exit(1); }
 
