@@ -9,6 +9,8 @@
     "upload-skills": "node scripts/upload-skills.js"
   },
   "devDependencies": {
-    "wrangler": "^4.107.1"
+    "viem": "^2.55.0",
+    "wrangler": "^4.107.1",
+    "x402-fetch": "^1.2.0"
   }
 }

@@ -6,8 +6,21 @@ workers_dev = true
 
 [vars]
 PAYMENT_ADDRESS = "0x37452291b76c09de01251f03C6531Fe01926189f"
-FACILITATOR_URL = "https://facilitator.x402.org"
+FACILITATOR_URL = "https://x402.org/facilitator"
 
 [[kv_namespaces]]
+binding = "SKILL_KV"
+id = "e2116bd7ee5846e287c08f49186f4529"
+
+[env.staging]
+name = "wizrdz-skills-gate-staging"
+workers_dev = true
+
+[env.staging.vars]
+PAYMENT_ADDRESS = "0x37452291b76c09de01251f03C6531Fe01926189f"
+FACILITATOR_URL = "https://x402.org/facilitator"
+NETWORK = "base-sepolia"
+
+[[env.staging.kv_namespaces]]
 binding = "SKILL_KV"
 id = "e2116bd7ee5846e287c08f49186f4529"

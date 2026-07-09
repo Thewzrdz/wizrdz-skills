@@ -1,15 +1,11 @@
 /**
  * x402 payment gate for wizrdz-skills SKILL.md files
- * Deploy: wrangler deploy
- * Docs: https://x402.org
- *
- * Env vars to set in Cloudflare dashboard (or wrangler.toml [vars]):
- *   PAYMENT_ADDRESS  — your Base mainnet wallet address (0x...)
- *   FACILITATOR_URL  — https://facilitator.x402.org (Coinbase's free verifier)
+ * Deploy: wrangler deploy --env=""          (production, base-mainnet)
+ *         wrangler deploy --env="staging"   (testnet, base-sepolia)
  */
 
-const USDC_BASE = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913';
-const NETWORK   = 'base-mainnet';
+const USDC_MAINNET = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913';
+const USDC_SEPOLIA = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
 
 const SKILLS = {
   'wordpress-malware-incident-response': { price: 5_000_000, desc: 'WordPress Malware IR Runbook — Thewizrdz.io' },
@@ -19,12 +15,11 @@ const SKILLS = {
   'federal-2210-star-application':       { price: 3_000_000, desc: 'Federal 2210 STAR Application Runbook — Thewizrdz.io' },
 };
 
-// Skill file contents are stored as Worker KV or inlined at deploy time.
-// See README for how to populate SKILL_KV namespace.
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const NETWORK   = env.NETWORK  || 'base-mainnet';
+    const USDC_BASE = NETWORK === 'base-sepolia' ? USDC_SEPOLIA : USDC_MAINNET;
 
     // Route: GET /skills/:name/SKILL.md
     const match = url.pathname.match(/^\/skills\/([^/]+)\/SKILL\.md$/);
@@ -38,16 +33,15 @@ export default {
       return new Response(`Unknown skill: ${skillName}`, { status: 404 });
     }
 
-    const paymentHeader = request.headers.get('X-Payment');
+    const paymentHeader = request.headers.get('X-PAYMENT');
 
-    // No payment header — return 402 with payment requirements
+    // No payment — return x402 v1 compliant 402
     if (!paymentHeader) {
       const requirements = {
-        version: 'x402-v1',
         scheme: 'exact',
         network: NETWORK,
         maxAmountRequired: String(skill.price),
-        resource: url.pathname,
+        resource: url.href,  // must be full URL per x402 spec
         description: skill.desc,
         mimeType: 'text/markdown',
         payTo: env.PAYMENT_ADDRESS,
@@ -57,42 +51,52 @@ export default {
       };
 
       return new Response(
-        JSON.stringify({ error: 'Payment required', x402: requirements }),
+        JSON.stringify({ x402Version: 1, error: 'Payment Required', accepts: [requirements] }),
         {
           status: 402,
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Payment-Required': JSON.stringify(requirements),
-          },
+          headers: { 'Content-Type': 'application/json' },
         }
       );
     }
 
-    // Payment header present — verify with facilitator
+    // Payment header present — settle with facilitator (executes on-chain transfer)
     try {
       const facilitatorUrl = env.FACILITATOR_URL || 'https://facilitator.x402.org';
-      const verifyRes = await fetch(`${facilitatorUrl}/verify`, {
+      const requirements = {
+        scheme: 'exact',
+        network: NETWORK,
+        maxAmountRequired: String(skill.price),
+        resource: url.href,
+        description: skill.desc,
+        mimeType: 'text/markdown',
+        payTo: env.PAYMENT_ADDRESS,
+        maxTimeoutSeconds: 300,
+        asset: USDC_BASE,
+        extra: { name: skillName, version: '0.1.0' },
+      };
+
+      // X-PAYMENT is a base64-encoded JSON string — facilitator wants the parsed object
+      let paymentPayload;
+      try {
+        paymentPayload = JSON.parse(atob(paymentHeader));
+      } catch {
+        paymentPayload = JSON.parse(paymentHeader); // fallback: already JSON
+      }
+
+      const settleRes = await fetch(`${facilitatorUrl}/settle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          payment: JSON.parse(paymentHeader),
-          requirements: {
-            scheme: 'exact',
-            network: NETWORK,
-            maxAmountRequired: String(skill.price),
-            resource: url.pathname,
-            payTo: env.PAYMENT_ADDRESS,
-            asset: USDC_BASE,
-            maxTimeoutSeconds: 300,
-          },
+          paymentPayload,
+          paymentRequirements: requirements,
         }),
       });
 
-      const result = await verifyRes.json();
+      const result = await settleRes.json();
 
-      if (!result.isValid) {
+      if (!settleRes.ok || result.error) {
         return new Response(
-          JSON.stringify({ error: 'Payment invalid', reason: result.invalidReason }),
+          JSON.stringify({ x402Version: 1, error: result.error || 'Payment settlement failed' }),
           { status: 402, headers: { 'Content-Type': 'application/json' } }
         );
       }
@@ -103,7 +107,7 @@ export default {
       );
     }
 
-    // Payment verified — serve the skill file from KV
+    // Settled — serve the skill from KV
     const content = await env.SKILL_KV?.get(skillName);
     if (!content) {
       return new Response('Skill content not found in KV. Run: npm run upload-skills', { status: 503 });
@@ -113,7 +117,7 @@ export default {
       status: 200,
       headers: {
         'Content-Type': 'text/markdown; charset=utf-8',
-        'X-Payment-Receipt': 'verified',
+        'X-Payment-Response': 'settled',
         'Cache-Control': 'no-store',
       },
     });
