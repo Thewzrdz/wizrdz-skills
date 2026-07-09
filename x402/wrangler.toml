@@ -5,7 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
 [vars]
-PAYMENT_ADDRESS = "0x37452291b76c09de01251f03C6531Fe01926189f"
+PAYMENT_ADDRESS = "0x8CD5ddd5A3fA4462Dc40039D1fdE60E6de747095"
 FACILITATOR_URL = "https://x402.org/facilitator"
 
 [[kv_namespaces]]
@@ -17,7 +17,7 @@ name = "wizrdz-skills-gate-staging"
 workers_dev = true
 
 [env.staging.vars]
-PAYMENT_ADDRESS = "0x37452291b76c09de01251f03C6531Fe01926189f"
+PAYMENT_ADDRESS = "0x8CD5ddd5A3fA4462Dc40039D1fdE60E6de747095"
 FACILITATOR_URL = "https://x402.org/facilitator"
 NETWORK = "base-sepolia"
 
