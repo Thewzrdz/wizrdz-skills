@@ -1,53 +1,56 @@
-# SMB WordPress Ops — by Thewizrdz.io
+# wizrdz-skills — by Thewizrdz.io
 
-Field-tested Claude Code skills for freelancers and small agencies who run
-WordPress sites for small businesses. Every skill is distilled from real
-client engagements — not theory.
+Field-tested Claude Code skills from real engagements. Five runbooks across WordPress security,
+DNS operations, federal IT job applications, and disciplined trading methodology.
 
-## What's in the bundle
+## Skills
 
-| Skill | What it does |
-|---|---|
-| `wordpress-malware-incident-response` | Full IR runbook for hacked WordPress sites: containment, forensic snapshot, finding self-healing backdoors (mu-plugins, wp_options payloads, malicious cron), eradication, hardening, Google reputation recovery, 14-day re-check. |
-| `dns-migration-without-downtime` | Nameserver / Cloudflare / host migrations that don't silently break client email. MX/SPF/DKIM/DMARC inventory before cutover, TTL staging, verification, rollback plan. |
-| `client-website-handoff` | Clean project closeout: deliverables, ownership-first credential transfer, content-update docs, deployment/DNS/SSL notes, sign-off checklist, maintenance retainer offer. |
+| Skill | Price (USDC) | What it does |
+|---|---|---|
+| `wordpress-malware-incident-response` | $5 | Full IR runbook for hacked WordPress: containment, forensic snapshot, self-healing backdoor detection (mu-plugins, wp_options payloads, malicious cron), eradication, hardening, Google reputation recovery, 14-day re-check. |
+| `dns-migration-without-downtime` | $3 | Nameserver / Cloudflare / host migrations that don't silently break email. MX/SPF/DKIM/DMARC inventory before cutover, TTL staging, verification, rollback plan. |
+| `client-website-handoff` | $2 | Clean project closeout: deliverables, ownership-first credential transfer, content-update docs, deployment/DNS/SSL notes, sign-off checklist, maintenance retainer offer. |
+| `pre-registered-backtest-gate` | $5 | Pre-registration discipline for trading strategy backtests. Commit to success bar before touching data, run once, honor the result — stops p-hacking and strategy deployment without real evidence. |
+| `federal-2210-star-application` | $3 | GS-2210 IT Security application runbook: resume formatting, USAJobs application, HR specialist screen, STAR panel interview with 5 real-engagement stories (malware IR, fleet ops, debugging, communication, risk). |
 
-## Install
-
-In Claude Code:
+## Install (Claude Code plugin marketplace)
 
 ```
 /plugin marketplace add thewizrdz/wizrdz-skills
-/plugin install smb-wordpress-ops@wizrdz-skills
 ```
 
-The skills activate automatically when your conversation matches their
-territory ("my wordpress site is redirecting to a spam page", "will switching
-to cloudflare break my email", "what do I hand the client at the end of the
-project"), or invoke them directly:
+Skills activate automatically when your conversation matches their territory, or invoke directly:
 
 ```
 /smb-wordpress-ops:wordpress-malware-incident-response
 /smb-wordpress-ops:dns-migration-without-downtime
 /smb-wordpress-ops:client-website-handoff
+/pre-registered-backtest-gate
+/federal-2210-star-application
 ```
+
+## Buy a single skill (x402 — AI-native micropayments)
+
+Any AI agent that speaks [x402](https://x402.org) can purchase individual skills with USDC on Base.
+No account, no subscription — pay per file.
+
+```
+GET https://wizrdz-skills.thewizrdz.workers.dev/skills/<name>/SKILL.md
+```
+
+The server returns HTTP 402 with payment requirements; the agent pays and retries.
+See [`x402/`](./x402/) for the Cloudflare Worker source.
 
 ## Design principles
 
-- **One self-contained SKILL.md per skill.** No scripts, no dependencies —
-  easy to security-audit, nothing executes on your machine.
-- **Defensive/remedial only.** Each skill carries an explicit guardrails
-  section. These are cleanup and operations runbooks, not attack tooling.
-- **From real engagements.** Where a step comes from documented field work
-  it's stated plainly; where it's standard practice it's framed as such.
+- **One self-contained SKILL.md per skill.** No scripts, no dependencies — nothing executes on your machine.
+- **Defensive/remedial only.** Every skill has an explicit guardrails section.
+- **From real engagements.** Steps from documented field work are stated plainly; standard practice is framed as such.
 
 ## About
 
-Built by [Thewizrdz.io](https://thewizrdz.io) — WordPress security incident
-response, email deliverability (SPF/DKIM/DMARC), and site operations for
-small businesses.
+Built by [Thewizrdz.io](https://thewizrdz.io) — WordPress security, DNS operations, and IT consulting for small businesses.
 
 ## License
 
-Copyright © 2026 Thewizrdz.io. Purchased copies are licensed for use by the
-purchaser; redistribution or resale is not permitted.
+Copyright © 2026 Thewizrdz.io. Purchased copies are licensed for use by the purchaser; redistribution or resale is not permitted.

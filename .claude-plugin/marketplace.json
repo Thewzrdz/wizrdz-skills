@@ -4,12 +4,32 @@
     "name": "Thewizrdz.io",
     "email": "eugeniosebastianperez@gmail.com"
   },
-  "description": "SMB WordPress operations skills from real client engagements: malware incident response, zero-downtime DNS migration, and client website handoff.",
+  "description": "Five field-tested runbooks from real client engagements: WordPress malware IR, DNS migration, client handoff, pre-registered backtest gate, and federal GS-2210 STAR application.",
   "plugins": [
     {
-      "name": "smb-wordpress-ops",
-      "source": "./",
-      "description": "Three field-tested runbooks for freelancers and small agencies running WordPress sites: malware incident response, DNS migration without breaking email, and clean client handoffs."
+      "name": "wordpress-malware-incident-response",
+      "source": "./skills/wordpress-malware-incident-response/",
+      "description": "Full IR runbook for hacked WordPress sites: containment, forensic snapshot, self-healing backdoor detection, eradication, hardening, and Google reputation recovery."
+    },
+    {
+      "name": "dns-migration-without-downtime",
+      "source": "./skills/dns-migration-without-downtime/",
+      "description": "Nameserver / Cloudflare / host migrations without silently breaking email. MX/SPF/DKIM/DMARC inventory, TTL staging, verification, and rollback."
+    },
+    {
+      "name": "client-website-handoff",
+      "source": "./skills/client-website-handoff/",
+      "description": "Clean project closeout: deliverables, credential transfer, content-update docs, deployment/DNS/SSL notes, sign-off checklist, and maintenance retainer offer."
+    },
+    {
+      "name": "pre-registered-backtest-gate",
+      "source": "./skills/pre-registered-backtest-gate/",
+      "description": "Pre-registration discipline for trading strategy backtests. Commit to a success bar before touching data, run once, honor the result."
+    },
+    {
+      "name": "federal-2210-star-application",
+      "source": "./skills/federal-2210-star-application/",
+      "description": "GS-2210 IT Security application runbook: resume formatting, USAJobs application, HR screen, and STAR panel interview with five real-engagement stories."
     }
   ]
 }

@@ -2,3 +2,6 @@
 *.key
 *.pem
 .DS_Store
+x402/node_modules/
+x402/.dev.vars
+x402/.wrangler/

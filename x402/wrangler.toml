@@ -1,0 +1,17 @@
+name = "wizrdz-skills-gate"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# Set these in the Cloudflare dashboard → Workers → Settings → Variables
+# (or wrangler secret put PAYMENT_ADDRESS)
+# PAYMENT_ADDRESS = "0x..."         <- your Base mainnet wallet
+# FACILITATOR_URL = "https://facilitator.x402.org"
+
+[[kv_namespaces]]
+binding = "SKILL_KV"
+# id = ""       <- fill after: wrangler kv namespace create SKILL_KV
+# preview_id = ""  <- fill after: wrangler kv namespace create SKILL_KV --preview
+
+[env.production]
+name = "wizrdz-skills-gate"

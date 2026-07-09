@@ -1,5 +1,5 @@
 {
-  "name": "smb-wordpress-ops",
-  "description": "SMB WordPress Ops: malware incident response, zero-downtime DNS migration, and client website handoff runbooks.",
-  "version": "0.1.0"
+  "name": "wizrdz-skills",
+  "description": "Five field-tested runbooks: WordPress malware incident response, zero-downtime DNS migration, client website handoff, pre-registered backtest gate, and federal GS-2210 STAR application.",
+  "version": "0.2.0"
 }
