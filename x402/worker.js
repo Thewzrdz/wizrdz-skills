@@ -15,16 +15,42 @@ const SKILLS = {
   'federal-2210-star-application':       { price: 3_000_000, desc: 'Federal 2210 STAR Application Runbook — Thewizrdz.io' },
 };
 
+async function incrementStat(kv, skillName) {
+  const key = `stats:${skillName}`;
+  const current = parseInt(await kv.get(key) || '0', 10);
+  await kv.put(key, String(current + 1));
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const NETWORK   = env.NETWORK  || 'base-mainnet';
     const USDC_BASE = NETWORK === 'base-sepolia' ? USDC_SEPOLIA : USDC_MAINNET;
 
+    // Route: GET /stats
+    if (url.pathname === '/stats') {
+      const stats = {};
+      let totalSales = 0;
+      let totalRevenue = 0;
+
+      for (const [name, skill] of Object.entries(SKILLS)) {
+        const count = parseInt(await env.SKILL_KV?.get(`stats:${name}`) || '0', 10);
+        const revenue = (count * skill.price) / 1_000_000;
+        stats[name] = { sales: count, price_usdc: skill.price / 1_000_000, revenue_usdc: revenue };
+        totalSales += count;
+        totalRevenue += revenue;
+      }
+
+      return new Response(
+        JSON.stringify({ network: NETWORK, total_sales: totalSales, total_revenue_usdc: totalRevenue, skills: stats }, null, 2),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Route: GET /skills/:name/SKILL.md
     const match = url.pathname.match(/^\/skills\/([^/]+)\/SKILL\.md$/);
     if (!match) {
-      return new Response('Not found. Available: /skills/<name>/SKILL.md', { status: 404 });
+      return new Response('Not found. Routes: /skills/<name>/SKILL.md  |  /stats', { status: 404 });
     }
 
     const skillName = match[1];
@@ -41,7 +67,7 @@ export default {
         scheme: 'exact',
         network: NETWORK,
         maxAmountRequired: String(skill.price),
-        resource: url.href,  // must be full URL per x402 spec
+        resource: url.href,
         description: skill.desc,
         mimeType: 'text/markdown',
         payTo: env.PAYMENT_ADDRESS,
@@ -52,16 +78,13 @@ export default {
 
       return new Response(
         JSON.stringify({ x402Version: 1, error: 'Payment Required', accepts: [requirements] }),
-        {
-          status: 402,
-          headers: { 'Content-Type': 'application/json' },
-        }
+        { status: 402, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // Payment header present — settle with facilitator (executes on-chain transfer)
+    // Payment header present — settle with facilitator
     try {
-      const facilitatorUrl = env.FACILITATOR_URL || 'https://facilitator.x402.org';
+      const facilitatorUrl = env.FACILITATOR_URL || 'https://x402.org/facilitator';
       const requirements = {
         scheme: 'exact',
         network: NETWORK,
@@ -75,21 +98,17 @@ export default {
         extra: { name: skillName, version: '0.1.0' },
       };
 
-      // X-PAYMENT is a base64-encoded JSON string — facilitator wants the parsed object
       let paymentPayload;
       try {
         paymentPayload = JSON.parse(atob(paymentHeader));
       } catch {
-        paymentPayload = JSON.parse(paymentHeader); // fallback: already JSON
+        paymentPayload = JSON.parse(paymentHeader);
       }
 
       const settleRes = await fetch(`${facilitatorUrl}/settle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          paymentPayload,
-          paymentRequirements: requirements,
-        }),
+        body: JSON.stringify({ paymentPayload, paymentRequirements: requirements }),
       });
 
       const result = await settleRes.json();
@@ -107,10 +126,12 @@ export default {
       );
     }
 
-    // Settled — serve the skill from KV
+    // Settled — increment counter and serve skill
+    await incrementStat(env.SKILL_KV, skillName);
+
     const content = await env.SKILL_KV?.get(skillName);
     if (!content) {
-      return new Response('Skill content not found in KV. Run: npm run upload-skills', { status: 503 });
+      return new Response('Skill content not found in KV.', { status: 503 });
     }
 
     return new Response(content, {
