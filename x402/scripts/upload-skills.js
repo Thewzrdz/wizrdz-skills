@@ -1,20 +1,6 @@
 #!/usr/bin/env node
-/**
- * Upload all SKILL.md files to the Cloudflare KV namespace.
- *
- * Usage:
- *   1. Deploy the Worker once so the KV namespace exists:
- *        wrangler kv namespace create SKILL_KV
- *   2. Fill the KV namespace id into wrangler.toml
- *   3. Run:
- *        node scripts/upload-skills.js
- *        # or: npm run upload-skills
- *
- * Each skill is stored with its directory name as the key.
- */
-
 import { execSync } from 'child_process';
-import { readdirSync, readFileSync } from 'fs';
+import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -42,13 +28,12 @@ for (const name of skills) {
     continue;
   }
 
-  // Write to a temp file so wrangler can read it without shell escaping issues
   const tmpFile = `/tmp/skill_${name}.md`;
-  import('fs').then(({ writeFileSync }) => writeFileSync(tmpFile, content));
+  writeFileSync(tmpFile, content);
 
   try {
     execSync(
-      `wrangler kv key put --binding=SKILL_KV "${name}" --path="${tmpFile}"`,
+      `npx wrangler kv key put --remote --binding=SKILL_KV "${name}" --path="${tmpFile}"`,
       { stdio: 'inherit', cwd: join(__dirname, '..') }
     );
     console.log(`  ✓ ${name}`);
@@ -57,4 +42,4 @@ for (const name of skills) {
   }
 }
 
-console.log('Done. Verify with: wrangler kv key list --binding=SKILL_KV');
+console.log('Done. Verify with: npx wrangler kv key list --binding=SKILL_KV');

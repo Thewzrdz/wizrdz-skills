@@ -2,6 +2,7 @@ name = "wizrdz-skills-gate"
 main = "worker.js"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
+workers_dev = true
 
 [vars]
 PAYMENT_ADDRESS = "0x37452291b76c09de01251f03C6531Fe01926189f"
@@ -9,8 +10,4 @@ FACILITATOR_URL = "https://facilitator.x402.org"
 
 [[kv_namespaces]]
 binding = "SKILL_KV"
-# id = ""       <- fill after: wrangler kv namespace create SKILL_KV
-# preview_id = ""  <- fill after: wrangler kv namespace create SKILL_KV --preview
-
-[env.production]
-name = "wizrdz-skills-gate"
+id = "e2116bd7ee5846e287c08f49186f4529"
